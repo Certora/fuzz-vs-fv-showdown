@@ -4,7 +4,7 @@
   auto_detect_solc = false
   bytecode_hash = "none"
   evm_version = "paris"
-  fuzz = { runs = 10, max_test_rejects = 100_000 }
+  fuzz = { runs = 10000, max_test_rejects = 100_000 }
   optimizer = true
   optimizer_runs = 10_000
   out = "out"

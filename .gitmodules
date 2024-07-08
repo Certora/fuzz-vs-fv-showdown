@@ -4,3 +4,6 @@
 [submodule "prb-math/lib/forge-std"]
 	path = prb-math/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "fuzz-vs-fv"]
+	path = fuzz-vs-fv
+	url = git@github.com:Certora/fuzz-vs-fv.git
