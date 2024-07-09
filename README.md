@@ -7,6 +7,7 @@ The tools used for fuzzing are [Foundry](https://book.getfoundry.sh/)and [Echidn
 This challenge set is based on existing benchmarks. In addition, and a few more examples aim to demonstrate the techniques and highlight the differences between them and their shared properties.
 
 
+Slides of a talk Given at ethcc(7) can be found [here](https://docs.google.com/presentation/d/1hTESS6QsveNN2_YG9Q297NJGb5XiwvXl05xgRr5S2kY/edit#slide=id.p)
 
 
 ## Results for Prb-math ##
@@ -63,7 +64,7 @@ There are three variables (x,y,denominator). The bug occurs when the result is n
 
 
 The probability of catching this behavior was 4 out of 8 (1 to 2 odds), which proved sufficient with 3 runs.
-As a result of this discovery, the function's definition was updated. You can find the update at https://github.com/PaulRBerg/prb-math/commit/9c7623419465d5cf21ac218cbc2777fa7e693fc
+
 
 
 
@@ -89,25 +90,26 @@ https://prover.certora.com/output/40726/4aae2d02e03d4b99a9a18bdda7084d39?anonymo
 This highlights two key observations:
 1. Properties should be written to ensure correct general behavior.
 2. There can be multiple violations of a property so the code should be fixed and rechecked.
+3. No change to other is a complicated rule to write with a fuzzer
 
 
 ### Challenge #2 Unstoppable  ###
 
 
-### Challenge #3 Proposal (Winner TIED ALL) ###
-The Certora Prover default behavior is pessimistic and asserts on dynamic loops; https://docs.certora.com/en/latest/docs/prover/cli/options.html#optimistic-loop. 
-The Certora Prover needs at least 2 iterations to detect the first mistake
-default: link todo
-optimistic_loop : todo
-loop_iter 2:
+### Challenge #3 Proposal ###
+The Certora Prover default behavior is over-approximation and asserts on dynamic loops; https://docs.certora.com/en/latest/docs/prover/cli/options.html#optimistic-loop. 
+See [result](https://prover.certora.com/output/40726/829c057e2446485bbc132b1764ae6a73?anonymousKey=ded92f50e2961fbe70e848e80c40c6fabace58eb) run after resolving external call. The prover asserts about "Unwinding condition in a loop".
 
+Adding only `--optimistic_loop`, the code is verified due to assuming only one loop (which implies one voter), see [report]
+(https://prover.certora.com/output/40726/672527e8e1f94b9bb0abe20ec9c1056f/?anonymousKey=bca2cd9a23ec9b0cb27791b6f4a8939b9a99cdf5). 
 
+The Certora Prover needs at least 2 iterations to detect a [violation](https://prover.certora.com/output/40726/48fbfffb48974d1a89c4595239f4e83a?anonymousKey=f8f12fac85dbf80fb348e771c6d7f7c8ab75cc2a).
+The issue is that the reward per voter should be computed using the totalVotersFor.
 
+Fixing the issue and rerunning with 2 iterations, the code is [verified](https://prover.certora.com/output/40726/626246a27635490b85e4ad9fb78aaf1b?anonymousKey=22e598e5006b8d2bbc67155d4b4ef8d187c61e0a). However, this again is an under-approximation. 
 
-Detect the issue that the computation should be on the totalVotersFor
-loop iter 2 on a fix:
-loop iter 3 on a fix capture another mistake:
-on a full fixed:
+Adding another loop iteration, identifies another [issue](https://prover.certora.com/output/40726/4e19880047f9437f85e4abe110f7e6ea?anonymousKey=51a29ced27f221bd0b43cbe42978e3fcf0864a9f), which there is one than one dust to give away to the last voter. 
+Now we can fix the code and get a complete [verification](https://prover.certora.com/output/40726/7f5bc4d479044dd7a7704ba862315885?anonymousKey=1ef5a2ea874ac79327c390ece206b56e30709421) .
 
 
 This example highlights that setup should be carefully checked, especially when using unsafe assumptions (in all tools).
@@ -177,7 +179,9 @@ Luckily the fuzzers choose 0 and small numbers at a higher probability so signif
 
 
 
-
+# comet
+Writing the same property as defined by Certora spec:
+Certoaa Spec: https://github.com/Certora/comet/tree/certora
 
 
 
